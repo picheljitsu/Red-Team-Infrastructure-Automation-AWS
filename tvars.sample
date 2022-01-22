@@ -1,0 +1,182 @@
+private-cidr="10.0.1.0/24"
+public-cidr="0.0.0.0/0"
+domain-rdir="myc2-redirector-domain.com"
+domain-c2="myc2-redirector-domain.com"
+key_name="RedKey"
+cspw="SuperPasswordforCobaltStrike"
+aws_access_key=""
+aws_secret_key=""
+aws-region="us-east-1"
+instance_template= { "image"         = "ami-0e472ba40eb589f49"
+                     "instance_type" = "t2.micro"
+                     "key_name"      = ""
+                     "volume_size"   = "30"
+                     "volume_type"   = "EBS"
+                     "delete_on_termination" = true
+                     "commands"      = []
+                     "encrypted"     = true                                                           
+                    }
+#Here you can specify instance configs of the aws_instance resource
+#if you wanted each server profile unique. See example below. Since
+#they're left blank, our locals section in main.tf will populate
+#default values we define in the instance_template variable
+instance_configs = {
+    "c2-http" = {
+        "image"         = "ami-0e472ba40eb589f49"
+        "instance_type" = "t2.micro"
+        "key_name"      = ""
+        "volume_size"   = "30"
+        "volume_type"   = "EBS"
+        "delete_on_termination" = true
+        "commands"      = []
+        "encrypted"     = true                                                              
+    }
+    "c2-http-rdr" = {}
+    "payload" = {}
+    "payload-rdr" = {}
+    "phishing" = {}
+    "phishing-rdr" = {}
+}
+
+network-configs = {
+    "core" = {
+        "cidr_block" = ["10.0.1.0/24"]
+        "map_public_ip_on_launch" = "false"
+        "availability_zone" = ""
+        }
+}   
+
+security_groups = {
+    "c2-http" = {
+        "description" = "C2 http rule"
+        "ingress" = {
+            "description" = "TLS from operator"
+            "from_port"   = "443"
+            "to_port"     = "443"
+            "protocol"    = "tcp"
+            "cidr_blocks" = ["<OPERATOR_IP_GOES_HERE(TODO)>"]
+        }
+        "egress" = {
+            "description"       = "Deny outbound."            
+            "from_port"         = "0"
+            "to_port"           = "0"
+            "protocol"          = "-1"
+            "cidr_blocks"       = ["0.0.0.0/0"]
+            "ipv6_cidr_blocks"  = ["::/0"]
+        }
+        "network" = "core"
+    }            
+    "c2-http-rdr" = {
+        "description" = "C2 http re-director rule"
+        "ingress" = {
+            "description"   = "Cobalt Strike TLS from operator"
+            "from_port"     = "50050"
+            "to_port"       = "50050"
+            "protocol"      = "tcp"
+            "cidr_blocks"   = ["<OPERATOR_IP_GOES_HERE(TODO)>"]
+        }
+        "egress" = {
+            "description"       = "Deny outbound."        
+            "from_port"         = "0"
+            "to_port"           = "0"
+            "protocol"          = "-1"
+            "cidr_blocks"       = ["0.0.0.0/0"]
+            "ipv6_cidr_blocks"  = ["::/0"]
+        }
+        "network" = "core"        
+    }
+    "phishing" = {
+        "description" = "GoPhish server rule"
+        "ingress" = {
+            "description"   = "Allow GoPhish admin interface from operator IP."
+            "from_port"     = "3333"
+            "to_port"       = "3333"
+            "protocol"      = "tcp"
+            "cidr_blocks"   = ["<OPERATOR_IP_GOES_HERE(TODO)>"]
+        }
+        "egress" = {
+            "description"       = "Deny outbound."
+            "from_port"         = "0"
+            "to_port"           = "0"
+            "protocol"          = "-1"
+            "cidr_blocks"       = ["0.0.0.0/0"]
+            "ipv6_cidr_blocks"  = ["::/0"]
+        }
+        "network" = "core"        
+    }
+    "phishing-rdr" = {
+        "description" = "Phishing e-mail re-director"
+        "ingress" = {
+            "description"   = "Allow World to Internal SMTP"
+            "from_port"     = "25"
+            "to_port"       = "25"
+            "protocol"      = "tcp"
+            "cidr_blocks"    = ["0.0.0.0/0"]            
+        }
+        
+        "egress" = {
+            "description"       = "Allow Internal SMTP to World"
+            "from_port"     = "25"
+            "to_port"       = "25"
+            "protocol"      = "tcp"
+            "cidr_blocks"    = ["0.0.0.0/0"]  
+            "ipv6_cidr_blocks"  = ["::/0"]
+        }
+        "network" = "core"        
+    }                                                     
+    
+}   
+
+#server-configs = {
+#    "c2-http" = {
+#        "image"         = "ami-0e472ba40eb589f49"
+#        "instance_type" = "t2.micro"
+#        "key_name"      = ""
+#        "volume_size"   = "30"
+#        "volume_type"   = "EBS"
+#        "delete_on_termination" = true
+#        "commands"      = []
+#        "encrypted"     = true                                                           
+#    }
+#    "c2-http-rdr" = {
+#        "image"         = "ami-0e472ba40eb589f49"
+#        "instance_type" = "t2.micro"
+#        "key_name"      = ""        
+#        "volume_size"   = "30"
+#        "volume_type"   = "EBS"
+#        "delete_on_termination" = true        
+#        "commands"      = []
+#        "encrypted"     = true          
+#    }
+#    "payload" = {
+#        "image"         = "ami-0e472ba40eb589f49"
+#        "instance_type" = "t2.micro"
+#        "key_name"      = ""
+#        "volume_size"   = "30"
+#        "volume_type"   = "EBS"
+#        "delete_on_termination" = true        
+#        "commands"      = []
+#        "encrypted"     = true                
+#    }
+#    "payload-rdr" = {
+#        "image"         = "ami-0e472ba40eb589f49"
+#        "instance_type" = "t2.micro"
+#        "key_name"      = ""
+#.... (Truncated for brevity)
+#}
+#
+
+#Future model for scaling
+
+#env-configs = {
+#    "enterprise" = [
+#        {
+#            "domain" = [
+#                {
+#                    "subnet" = []
+#                    "subdomain" = []
+#                }
+#            ]
+#        }
+#    ]
+#}

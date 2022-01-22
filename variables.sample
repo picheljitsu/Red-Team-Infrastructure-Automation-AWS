@@ -1,0 +1,81 @@
+# this is a sample variables file.
+
+# tokens, api keys
+variable "cf-token" {
+    default = "yourcloudflaretoken" }
+
+variable "cf-email" {
+    default = "xxx@xxx.com" }
+
+# operator IPs
+variable "operator-ip" {
+    default = "aaa.bbb.ccc.ddd" }
+
+# ssh keys
+variable "ssh-public-key" {
+    default = "/root/.ssh/id_rsa.pub" }
+
+# domains & subdomains
+variable "domain-rdir" {
+    default = "example.com" }
+
+variable "domain-c2" {
+    default = "example.net" }
+
+variable "sub1" {
+    default = "static" }
+
+variable "sub2" {
+    default = "ads" }
+
+variable "sub3" {
+    default = "js" }
+
+variable "sub4" {
+    default = "css" }
+
+variable "sub5" {
+    default = "apple" }
+
+variable "sub6" {
+    default = "login" }
+    
+variable "cspw" {
+    default = "somecrazystrongpasswordgoesherelel" }
+
+variable "AMI_ID" {
+  type    = "string"
+  description = "AMI ID for the instance"
+}
+variable "EC2_INSTANCE_SIZE" {
+  type    = "string"
+  default = "t2.micro"
+  description = "The EC2 instance size"
+}
+variable "EC2_SMALL_ROOT_VOLUME_SIZE" {
+  type    = "string"
+  default = "30"
+  description = "The volume size for the root volume in GiB"
+}
+
+variable "EC2_MEDIUM_ROOT_VOLUME_SIZE" {
+  type    = "string"
+  default = "30"
+  description = "The volume size for the root volume in GiB"
+}
+variable "EC2_LARGE_ROOT_VOLUME_SIZE" {
+  type    = "string"
+  default = "30"
+  description = "The volume size for the root volume in GiB"
+}
+
+variable "EC2_ROOT_VOLUME_TYPE" {
+  type    = "string"
+  default = "gp2"
+  description = "The type of data storage: standard, gp2, io1"
+}
+
+variable "EC2_ROOT_VOLUME_DELETE_ON_TERMINATION" {
+  default = true
+  description = "Delete the root volume on instance termination."
+}
